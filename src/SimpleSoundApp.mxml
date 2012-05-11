@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="315" height="438"
+					   title="Simple Recorder">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script >		
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.gmail.nxhoaf.Recorder;
+			var recorder : Recorder = new Recorder();
+			
+			public function toMp3IsClicked() {
+				Alert.show("toMp3IsClicked");
+			}
+			
+			public function toWavIsClicked() {
+				Alert.show("toWavIsClicked");
+			}
+			
+			public function playbackIsClicked() {
+				recorder.playback();
+			}
+			
+			public function recordIsClicked() {
+				var mic : Microphone = Microphone.getMicrophone();
+				if (mic == null) {
+					return;
+				}
+				recorder.setMicrophone(mic);
+				recorder.startRecord();
+				label.text = "Recording...";
+				record.enabled = false;
+				stop.enabled = true;
+			}
+			
+			public function stopIsClicked() {
+				recorder.stopRecord();
+				label.text = "Click Record to begin.";
+				record.enabled = true;
+				stop.enabled = false;
+				toMp3.enabled = true;
+				toWav.enabled = true;
+				playback.enabled = true;
+			}
+			
+			public function sendIsClicked() {
+				recorder.encodeToFlacAndSend();			
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group x="31" y="31" width="250" height="212">
+		<s:Label id="label" x="10" y="80" width="240" height="55" fontSize="24" text="Click Record to begin."/>
+	</s:Group>
+	<s:Group x="31" y="269" width="250" height="134">		
+		<s:Button id="record" name="record" x="10" y="30" label="Record" click="recordIsClicked();"/>
+		<s:Button id="stop" name="stop" x="90" y="30" label="Stop" enabled="false" click="stopIsClicked();"/>
+		<s:Button x="170" y="30" id="send" name="send" label="Send" click="sendIsClicked()"/>
+		
+		<s:Button id = "toMp3" name="toMp3" x="10" y="90" label="To Mp3" enabled="false" click="toMp3IsClicked();"/>
+		<s:Button id="toWav" x="88" y="90" width="70" label="To Wav"  enabled="false" name="toWav" click="toWavIsClicked();"/>		
+		<s:Button x="170" y="90" name="playback" id="playback" label="Play! " enabled="false" click="playbackIsClicked();"/>
+	</s:Group>
+</s:WindowedApplication>
