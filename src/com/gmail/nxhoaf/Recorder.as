@@ -2,6 +2,8 @@ package com.gmail.nxhoaf
 {
 	import cmodule.flac.CLibInit;
 	
+	import com.adobe.audio.format.WAVWriter;
+	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.SampleDataEvent;
@@ -14,6 +16,8 @@ package com.gmail.nxhoaf
 	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
+	
+	import fr.telecomParisTech.sound.SoundFormat;
 	
 	import mx.controls.Alert;
 
@@ -147,6 +151,38 @@ package com.gmail.nxhoaf
 			return result;
 		}
 		
+		/**
+		 * Save recorded audio stream to a specific audio format
+		 * @param soundFormat: expected sound format
+		 */ 
+		public function saveAs(soundFormat: String) {
+			switch(soundFormat) {			
+				case SoundFormat.WAV:
+					encodeToWav(bytes);
+					break;
+				default:
+					encodeToWav(bytes);
+					break;
+			}
+		}
 		
+		/**
+		 * Encode recorded audio to .wav
+		 * @param inputStream stream which we want to encode 
+		 * 
+		 */ 
+		private function encodeToWav(bytes:ByteArray) : void {
+			var wav:WAVWriter = new WAVWriter();
+			wav.numOfChannels = 1;
+			wav.sampleBitRate = 16;
+			wav.samplingRate = 	44100;
+			
+			bytes.position = 0;
+			var wavData : ByteArray = new ByteArray();
+			wavData.endian = Endian.BIG_ENDIAN;
+			wav.processSamples(wavData,bytes,44100,1);			
+			//wavData.position = 0;	
+			(new FileReference()).save(wavData, ".wav");
+		}
 	}
 }

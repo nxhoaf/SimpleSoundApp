@@ -9,8 +9,10 @@
 	</fx:Declarations>
 	<fx:Script >		
 		<![CDATA[
-			import mx.controls.Alert;
 			import com.gmail.nxhoaf.Recorder;
+			import com.gmail.nxhoaf.SoundFormat;
+			
+			import mx.controls.Alert;
 			var recorder : Recorder = new Recorder();
 			
 			public function toMp3IsClicked() {
@@ -18,7 +20,7 @@
 			}
 			
 			public function toWavIsClicked() {
-				Alert.show("toWavIsClicked");
+				recorder.saveAs(SoundFormat.WAV);
 			}
 			
 			public function playbackIsClicked() {
