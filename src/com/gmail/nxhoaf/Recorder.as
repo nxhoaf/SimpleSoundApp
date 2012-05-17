@@ -6,6 +6,7 @@ package com.gmail.nxhoaf
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.ProgressEvent;
 	import flash.events.SampleDataEvent;
 	import flash.media.Microphone;
 	import flash.media.Sound;
@@ -17,7 +18,8 @@ package com.gmail.nxhoaf
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	
-	import fr.telecomParisTech.sound.SoundFormat;
+	import fr.kikko.lab.ShineMP3Encoder;
+
 	
 	import mx.controls.Alert;
 
@@ -25,6 +27,7 @@ package com.gmail.nxhoaf
 	{
 		private var bytes:ByteArray;
 		private var mic:Microphone;
+		private var mp3Encoder : ShineMP3Encoder;
 		
 		private static const FLOAT_MAX_VALUE:Number = 1.0;
 		private static const SHORT_MAX_VALUE:int = 0x7fff;
@@ -160,6 +163,9 @@ package com.gmail.nxhoaf
 				case SoundFormat.WAV:
 					encodeToWav(bytes);
 					break;
+				case SoundFormat.MP3: 
+					encodeToMp3(bytes);
+					break;
 				default:
 					encodeToWav(bytes);
 					break;
@@ -183,6 +189,41 @@ package com.gmail.nxhoaf
 			wav.processSamples(wavData,bytes,44100,1);			
 			//wavData.position = 0;	
 			(new FileReference()).save(wavData, ".wav");
+		}
+		
+		/**
+		 * Encode recorded audio to .mp3
+		 * @param inputStream stream which we want to encode  
+		 * 
+		 */ 
+		private function encodeToMp3(bytes:ByteArray) : void {
+			var wav:WAVWriter = new WAVWriter();
+			wav.numOfChannels = 1;
+			wav.sampleBitRate = 16;
+			wav.samplingRate = 44100;
+			
+			bytes.position = 0;
+			var wavData : ByteArray = new ByteArray();
+			wavData.endian = Endian.BIG_ENDIAN;
+			wav.processSamples(wavData,bytes,44100,1);			
+			wavData.position = 0;
+			
+			mp3Encoder = new ShineMP3Encoder(wavData);
+			mp3Encoder.addEventListener(Event.COMPLETE, mp3EncodeComplete);
+			mp3Encoder.addEventListener(ProgressEvent.PROGRESS, mp3EncodeProgress);
+			mp3Encoder.addEventListener(ErrorEvent.ERROR, mp3EncodeError);
+			mp3Encoder.start();
+			
+			function mp3EncodeProgress(event : ProgressEvent) : void {
+			}
+			
+			function mp3EncodeError(event : ErrorEvent) : void {
+				Alert.show(event.toString());
+			}
+			
+			function mp3EncodeComplete(event : Event) : void {
+				mp3Encoder.saveAs();
+			}
 		}
 	}
 }

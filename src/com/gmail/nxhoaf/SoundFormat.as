@@ -7,3 +7,4 @@ package com.gmail.nxhoaf
 		public static const FLAC:String = "flac";
 	}
 }
+

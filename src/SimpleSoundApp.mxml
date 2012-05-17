@@ -16,7 +16,7 @@
 			var recorder : Recorder = new Recorder();
 			
 			public function toMp3IsClicked() {
-				Alert.show("toMp3IsClicked");
+				recorder.saveAs(SoundFormat.MP3);
 			}
 			
 			public function toWavIsClicked() {
